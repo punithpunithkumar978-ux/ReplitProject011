@@ -1,0 +1,1434 @@
+# MASTER PROMPT — SMART QUEUE TOKEN MANAGEMENT WEB APPLICATION
+
+You are an expert full-stack software engineer, UI/UX designer, database architect, and security-focused application developer.
+
+Build a production-ready full-stack web application called **QueueLess**.
+
+## IMPORTANT DEVELOPMENT RULE
+
+DO NOT attempt to build the entire application in one generation.
+
+Work in **small, controlled phases**.
+
+After completing each phase:
+
+1. Verify that the application runs.
+2. Fix only errors directly related to that phase.
+3. Do not unnecessarily refactor working code.
+4. Do not add features that were not requested.
+5. Do not generate large amounts of unnecessary documentation.
+6. Keep the code modular so future phases can be added easily.
+7. Before making major architectural changes, explain what you intend to change.
+8. Prefer simple, maintainable implementations over unnecessarily complex architectures.
+9. Reuse existing components and utilities instead of creating duplicates.
+10. Do not regenerate the whole project when only a small change is required.
+
+The goal is to minimize Replit Agent usage, token consumption, build time, and unnecessary credit usage.
+
+---
+
+# 1. APPLICATION IDEA
+
+Build a smart digital queue/token management platform.
+
+The main problem:
+
+People currently have to physically stand in long queues to access services such as:
+
+* Hospitals
+* Clinics
+* Government offices
+* Banks
+* College offices
+* Restaurants
+* Service centers
+* Salons
+* Customer service counters
+* Labs
+* Ticket counters
+* Other organizations that operate using physical queues
+
+The application allows a person to:
+
+1. Find a service/location.
+2. Select the required service.
+3. Request a digital token.
+4. Receive a token number.
+5. See the approximate waiting time.
+6. Track their position in the queue.
+7. Receive notifications when their turn is approaching.
+8. Arrive at the location near their expected service time instead of standing in a physical queue.
+
+Organizations can:
+
+1. Create their organization.
+2. Create service counters/services.
+3. Configure queue rules.
+4. Generate and manage tokens.
+5. Call the next token.
+6. Skip absent customers.
+7. Mark customers as completed.
+8. Monitor queue statistics.
+9. View current queue status.
+10. Manage staff/operators.
+
+---
+
+# 2. CORE PRODUCT VISION
+
+The application should have two major sides.
+
+## CUSTOMER SIDE
+
+Customers should be able to:
+
+* Register/login.
+* Browse organizations.
+* Search organizations.
+* View available services.
+* View current queue status.
+* Generate a token.
+* View their active token.
+* Track queue position.
+* See estimated waiting time.
+* Cancel a token where permitted.
+* View token history.
+* Receive queue status updates.
+
+## ORGANIZATION/STAFF SIDE
+
+Organizations should be able to:
+
+* Register/login.
+* Create organization profile.
+* Create services.
+* Configure counters.
+* View live queues.
+* Generate tokens for walk-in customers.
+* Call next token.
+* Recall token.
+* Skip token.
+* Complete token.
+* Cancel token.
+* View waiting customers.
+* View queue statistics.
+* Manage staff.
+
+---
+
+# 3. MVP FIRST
+
+DO NOT build every advanced feature immediately.
+
+The first implementation must focus on a functional MVP.
+
+MVP features:
+
+### Authentication
+
+* Customer signup/login
+* Organization/staff signup/login
+* Logout
+* Protected routes
+
+### Organization
+
+* Create organization
+* Organization dashboard
+* Create service
+* View services
+
+### Queue
+
+* Customer selects organization
+* Customer selects service
+* Customer generates token
+* Token receives sequential number
+* Customer can view token
+* Staff can view queue
+* Staff can call next token
+* Staff can mark token completed
+* Staff can skip token
+
+### Customer dashboard
+
+Show:
+
+* Current token
+* Queue position
+* Number of people ahead
+* Estimated waiting time
+* Queue status
+* Service name
+* Organization name
+
+### Staff dashboard
+
+Show:
+
+* Current serving token
+* Waiting tokens
+* Queue count
+* Next token
+* Completed tokens
+* Skipped tokens
+
+Do not build payments, AI, advanced analytics, SMS, WhatsApp, complex notifications, multi-branch organizations, or other advanced features during the MVP unless explicitly requested later.
+
+---
+
+# 4. TECHNOLOGY STACK
+
+Use a modern, stable stack.
+
+Preferred:
+
+Frontend:
+
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+
+Backend:
+
+* Supabase
+* Supabase Auth
+* Supabase PostgreSQL
+* Supabase Realtime where appropriate
+
+Use Supabase as the primary backend instead of creating an unnecessary custom backend.
+
+Use a clean component-based architecture.
+
+Use TypeScript throughout.
+
+---
+
+# 5. SUPABASE CONFIGURATION
+
+The application will use this Supabase project:
+
+SUPABASE_URL:
+
+https://mefjqlmthqhwsmqnzocm.supabase.co
+
+SUPABASE_ANON_KEY:
+
+sb_publishable_qCFiBK01gPpRNbt4qXIDnA_2VU5C-ku
+
+IMPORTANT:
+
+Do NOT hardcode these values directly into source code.
+
+Use environment variables.
+
+For example:
+
+VITE_SUPABASE_URL:https://mefjqlmthqhwsmqnzocm.supabase.co
+
+VITE_SUPABASE_ANON_KEY:sb_publishable_qCFiBK01gPpRNbt4qXIDnA_2VU5C-ku
+
+Configure them through Replit Secrets / environment variables.
+
+If a Supabase secret/service-role key is provided later:
+
+NEVER put it into frontend code.
+
+NEVER prefix a secret/service-role key with VITE_.
+
+NEVER expose it to the browser.
+
+Store sensitive backend secrets only in server-side environment variables.
+
+The application must work using environment variables.
+
+Create an appropriate `.env.example` file containing placeholders only.
+
+Example:
+
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+
+Do not place real secrets inside `.env.example`.
+
+---
+
+# 6. DATABASE DESIGN
+
+Design the Supabase PostgreSQL database cleanly.
+
+Start with these core entities.
+
+## profiles
+
+Fields:
+
+* id
+* full_name
+* phone
+* email
+* role
+* created_at
+* updated_at
+
+Roles:
+
+* customer
+* organization_owner
+* staff
+* admin
+
+The profile ID should be associated with Supabase Auth users.
+
+---
+
+## organizations
+
+Fields:
+
+* id
+* name
+* description
+* address
+* phone
+* email
+* logo_url
+* owner_id
+* is_active
+* created_at
+* updated_at
+
+---
+
+## services
+
+Fields:
+
+* id
+* organization_id
+* name
+* description
+* average_service_time_minutes
+* is_active
+* created_at
+* updated_at
+
+---
+
+## counters
+
+Fields:
+
+* id
+* organization_id
+* name
+* counter_number
+* is_active
+* created_at
+* updated_at
+
+---
+
+## queue_tokens
+
+Fields:
+
+* id
+* organization_id
+* service_id
+* counter_id
+* customer_id
+* token_number
+* status
+* queue_date
+* issued_at
+* called_at
+* completed_at
+* cancelled_at
+* estimated_wait_minutes
+* created_at
+* updated_at
+
+Statuses:
+
+* waiting
+* called
+* serving
+* completed
+* skipped
+* cancelled
+
+---
+
+## queue_events
+
+Use this table for important queue state changes.
+
+Fields:
+
+* id
+* token_id
+* event_type
+* performed_by
+* metadata
+* created_at
+
+Possible events:
+
+* token_created
+* token_called
+* token_recalled
+* token_skipped
+* token_completed
+* token_cancelled
+
+---
+
+# 7. TOKEN GENERATION
+
+Token numbers must be generated safely.
+
+Do not rely only on frontend JavaScript to calculate:
+
+lastToken + 1
+
+because simultaneous customers could receive duplicate tokens.
+
+Token generation should be handled safely at the database/backend level.
+
+For each organization + service + queue date:
+
+Example:
+
+A001
+A002
+A003
+A004
+
+or:
+
+1
+2
+3
+4
+
+Choose a simple token format for MVP.
+
+Prevent duplicate token numbers under concurrent requests.
+
+Use PostgreSQL constraints/functions/transactions where appropriate.
+
+---
+
+# 8. QUEUE LOGIC
+
+The queue should generally operate in FIFO order.
+
+Example:
+
+Token 1
+Token 2
+Token 3
+Token 4
+
+If Token 1 is being served:
+
+Current:
+Token 1
+
+Waiting:
+
+Token 2
+Token 3
+Token 4
+
+When staff presses:
+
+"Call Next"
+
+Token 2 becomes called/serving.
+
+When completed:
+
+Token 2 becomes completed.
+
+Then:
+
+Token 3 becomes next.
+
+Do not allow invalid state transitions.
+
+For example:
+
+completed → serving
+
+should not be allowed.
+
+---
+
+# 9. ESTIMATED WAITING TIME
+
+For MVP:
+
+Estimated wait time can be calculated using:
+
+number_of_people_ahead × average_service_time
+
+Example:
+
+People ahead = 5
+
+Average service time = 10 minutes
+
+Estimated wait = 50 minutes
+
+Display:
+
+"Approximately 50 minutes"
+
+Clearly label this as an estimate.
+
+Later this system can be improved using historical service-time data.
+
+---
+
+# 10. REAL-TIME UPDATES
+
+Use Supabase Realtime where it provides real value.
+
+Customers should not need to manually refresh the page to see basic queue changes.
+
+When a staff member:
+
+* calls a token
+* completes a token
+* skips a token
+
+the customer queue information should update.
+
+Avoid unnecessarily subscribing to every database table.
+
+Use targeted realtime subscriptions.
+
+Clean up subscriptions when components unmount.
+
+---
+
+# 11. CUSTOMER UI
+
+Create a modern, clean, mobile-first interface.
+
+Main pages:
+
+### Landing page
+
+Sections:
+
+* Hero
+* How it works
+* Benefits
+* For customers
+* For organizations
+* CTA
+* Footer
+
+Hero message:
+
+"Skip the Queue. Keep Your Time."
+
+Supporting message:
+
+"Get a digital token and arrive when it's almost your turn."
+
+Primary CTA:
+
+"Get a Token"
+
+Secondary CTA:
+
+"For Organizations"
+
+---
+
+### Customer Dashboard
+
+Display:
+
+* Welcome message
+* Search organizations
+* Nearby/recent organizations if available
+* Active token
+* Recent tokens
+* Quick actions
+
+---
+
+### Organization List
+
+Cards should show:
+
+* Organization name
+* Service categories
+* Current queue size
+* Estimated waiting time
+* Status
+* Address
+
+---
+
+### Organization Details
+
+Display:
+
+* Organization information
+* Available services
+* Current queue information
+* Estimated wait
+* "Get Token" button
+
+---
+
+### Token Screen
+
+This is one of the most important screens.
+
+Show:
+
+TOKEN
+
+#A025
+
+Also show:
+
+* Service
+* Organization
+* Queue position
+* People ahead
+* Estimated waiting time
+* Status
+* Issued time
+
+Use a visually prominent token card.
+
+Example:
+
+YOUR TOKEN
+
+A025
+
+5 PEOPLE AHEAD
+
+~35 MINUTES
+
+STATUS: WAITING
+
+---
+
+# 12. STAFF UI
+
+Create a professional dashboard.
+
+Sidebar:
+
+* Dashboard
+* Queue
+* Services
+* Counters
+* Staff
+* History
+* Settings
+
+Main dashboard:
+
+### Current Token
+
+Large display:
+
+NOW SERVING
+
+A024
+
+Buttons:
+
+* Complete
+* Skip
+* Recall
+
+### Next Customers
+
+Display:
+
+A025
+A026
+A027
+A028
+
+Each row can display:
+
+* Token number
+* Service
+* Waiting time
+* Status
+
+Main CTA:
+
+CALL NEXT
+
+---
+
+# 13. RESPONSIVE DESIGN
+
+The application must work well on:
+
+* Desktop
+* Laptop
+* Tablet
+* Mobile
+
+Customer screens should prioritize mobile.
+
+Staff dashboard should work on desktop and tablet.
+
+Avoid fixed-width layouts.
+
+Use responsive Tailwind classes.
+
+---
+
+# 14. DESIGN SYSTEM
+
+Use a clean modern SaaS-style UI.
+
+Design principles:
+
+* Simple
+* Professional
+* Accessible
+* Fast
+* Minimal visual clutter
+* Strong hierarchy
+* Clear status indicators
+
+Use consistent:
+
+* Typography
+* Border radius
+* Spacing
+* Buttons
+* Cards
+* Form controls
+* Alerts
+* Loading states
+* Empty states
+* Error states
+
+Do not overuse gradients or animations.
+
+Use animations only where they improve usability.
+
+---
+
+# 15. AUTHENTICATION
+
+Use Supabase Auth.
+
+Support:
+
+* Email/password signup
+* Email/password login
+* Logout
+* Protected routes
+
+After signup:
+
+Create a corresponding profile record.
+
+Role-based routing:
+
+customer → customer dashboard
+
+organization_owner → organization dashboard
+
+staff → staff dashboard
+
+admin → admin dashboard
+
+Do not trust frontend role information alone.
+
+Use database Row Level Security.
+
+---
+
+# 16. ROW LEVEL SECURITY
+
+Supabase RLS must be implemented.
+
+Customers should only be able to access their own customer-specific information.
+
+Organization owners should only manage their own organizations.
+
+Staff should only access queues belonging to organizations they are authorized to work for.
+
+Users should not be able to modify another organization's data by changing an ID in the frontend.
+
+Never rely solely on UI restrictions for authorization.
+
+---
+
+# 17. SECURITY
+
+Follow secure development practices.
+
+Never expose:
+
+* Supabase service-role keys
+* Database passwords
+* Private API keys
+* Secret tokens
+
+Do not put secrets in Git.
+
+Use environment variables.
+
+Validate user input.
+
+Handle authentication errors safely.
+
+Do not display database errors directly to users.
+
+Use appropriate database constraints.
+
+Prevent duplicate tokens.
+
+Prevent unauthorized queue manipulation.
+
+---
+
+# 18. ERROR HANDLING
+
+Every important action should have:
+
+* Loading state
+* Success state
+* Error state
+
+Examples:
+
+"Generating your token..."
+
+"Token generated successfully."
+
+"Unable to generate token. Please try again."
+
+Do not leave the user staring at a blank screen.
+
+---
+
+# 19. EMPTY STATES
+
+Create useful empty states.
+
+Example:
+
+"No active tokens"
+
+"You don't have an active queue token right now."
+
+For staff:
+
+"No customers are currently waiting."
+
+---
+
+# 20. LOADING STATES
+
+Use skeleton loaders or lightweight loading indicators.
+
+Do not display blank pages while data loads.
+
+Avoid unnecessary spinners everywhere.
+
+---
+
+# 21. PROJECT STRUCTURE
+
+Keep the project modular.
+
+Suggested structure:
+
+src/
+
+components/
+
+pages/
+
+layouts/
+
+hooks/
+
+lib/
+
+services/
+
+types/
+
+utils/
+
+contexts/
+
+features/
+
+auth/
+
+queue/
+
+organization/
+
+customer/
+
+staff/
+
+Do not create unnecessary files.
+
+Keep related functionality together.
+
+---
+
+# 22. REUSABLE COMPONENTS
+
+Create reusable components such as:
+
+Button
+
+Card
+
+Input
+
+Modal
+
+Badge
+
+LoadingSpinner
+
+Skeleton
+
+Toast
+
+Navbar
+
+Sidebar
+
+TokenCard
+
+QueueStatus
+
+QueuePosition
+
+OrganizationCard
+
+ServiceCard
+
+ConfirmDialog
+
+Do not duplicate UI code unnecessarily.
+
+---
+
+# 23. DATABASE TYPES
+
+Generate TypeScript types corresponding to the database schema.
+
+Avoid using:
+
+any
+
+unless genuinely necessary.
+
+Prefer strongly typed Supabase queries.
+
+---
+
+# 24. PERFORMANCE
+
+Keep the MVP lightweight.
+
+Do not install unnecessary libraries.
+
+Do not introduce Redux unless the application genuinely requires it.
+
+Prefer React state/context and server/database queries for simple state.
+
+Avoid excessive database requests.
+
+Do not fetch entire tables when only a few records are required.
+
+Use pagination where appropriate.
+
+---
+
+# 25. ACCESSIBILITY
+
+Follow basic accessibility practices:
+
+* Semantic HTML
+* Keyboard navigation
+* Proper labels
+* Accessible buttons
+* Good contrast
+* Focus states
+* ARIA labels where needed
+
+Do not rely only on color to communicate queue status.
+
+---
+
+# 26. SEO
+
+For public pages:
+
+* Meaningful page titles
+* Meta descriptions
+* Semantic HTML
+
+Example title:
+
+"QueueLess — Skip the Queue"
+
+---
+
+# 27. PHASED DEVELOPMENT PROCESS
+
+This is extremely important.
+
+Do not build everything at once.
+
+## PHASE 1 — PROJECT FOUNDATION
+
+Build only:
+
+* React/Vite/TypeScript setup
+* Tailwind
+* Basic routing
+* Supabase client
+* Environment variables
+* Base layout
+* Landing page
+* Basic responsive navigation
+
+Do not build queue logic yet.
+
+At the end:
+
+* Run the project.
+* Fix build errors.
+* Confirm Supabase connection.
+
+Then STOP.
+
+---
+
+## PHASE 2 — AUTHENTICATION
+
+Build:
+
+* Signup
+* Login
+* Logout
+* Auth context/state
+* Protected routes
+* Profile creation
+* Role selection
+
+Test:
+
+* Customer login
+* Organization owner login
+* Logout
+* Protected routes
+
+Then STOP.
+
+---
+
+## PHASE 3 — DATABASE + ORGANIZATION
+
+Create:
+
+* profiles
+* organizations
+* services
+* counters
+
+Add:
+
+* RLS policies
+* Organization creation
+* Service creation
+* Organization dashboard
+
+Then test database operations.
+
+Then STOP.
+
+---
+
+## PHASE 4 — TOKEN SYSTEM
+
+Implement:
+
+* Token generation
+* Sequential numbering
+* Queue date
+* Token statuses
+* Queue position
+* Estimated waiting time
+
+Build customer token creation flow.
+
+Then STOP.
+
+---
+
+## PHASE 5 — STAFF QUEUE MANAGEMENT
+
+Implement:
+
+* Staff dashboard
+* Current token
+* Call next
+* Complete
+* Skip
+* Recall
+* Waiting queue
+
+Then STOP.
+
+---
+
+## PHASE 6 — REALTIME
+
+Add:
+
+* Supabase Realtime
+* Queue updates
+* Customer token updates
+* Staff dashboard updates
+
+Only add realtime subscriptions where required.
+
+Then STOP.
+
+---
+
+## PHASE 7 — POLISH
+
+Improve:
+
+* Responsive design
+* Loading states
+* Error states
+* Empty states
+* Accessibility
+* Form validation
+* Toast notifications
+* Visual consistency
+
+Then STOP.
+
+---
+
+## PHASE 8 — TESTING
+
+Test:
+
+### Authentication
+
+* Signup
+* Login
+* Logout
+* Invalid credentials
+
+### Customer
+
+* Browse organization
+* Select service
+* Generate token
+* View token
+* View queue position
+* Cancel token
+
+### Staff
+
+* View queue
+* Call next
+* Complete
+* Skip
+* Recall
+
+### Security
+
+* Customer cannot access another customer's private data.
+* Staff cannot modify unauthorized organization data.
+* Organization owner cannot access another organization.
+
+### Concurrency
+
+Test multiple token requests happening at approximately the same time.
+
+Ensure duplicate token numbers cannot be generated.
+
+---
+
+# 28. IMPORTANT AGENT BEHAVIOR
+
+Before implementing anything:
+
+1. Inspect the existing repository.
+2. Determine whether a project already exists.
+3. Do not delete existing working code.
+4. Reuse existing infrastructure where appropriate.
+5. Identify the package manager.
+6. Check existing environment variables.
+7. Check existing Supabase configuration.
+8. Only install dependencies that are actually required.
+
+If the project is empty, initialize the project.
+
+If a project already exists, adapt to it rather than rebuilding from scratch.
+
+---
+
+# 29. DO NOT DO THESE THINGS
+
+Do NOT:
+
+* Build all phases in one generation.
+* Install dozens of dependencies.
+* Create an unnecessarily complex backend.
+* Create microservices.
+* Add Docker unless necessary.
+* Add Redis unless necessary.
+* Add Kubernetes.
+* Add an AI system to the MVP.
+* Add payment processing.
+* Add SMS providers.
+* Add WhatsApp integration.
+* Add maps.
+* Add complex analytics.
+* Add unnecessary animations.
+* Rewrite working files unnecessarily.
+* Replace the entire codebase to fix a small issue.
+* Hardcode secrets.
+* Expose Supabase service-role keys.
+* Create fake backend functionality when Supabase can handle it.
+
+These can be added later as separate tasks.
+
+---
+
+# 30. ENVIRONMENT VARIABLES
+
+Use:
+
+VITE_SUPABASE_URL
+
+VITE_SUPABASE_ANON_KEY
+
+The values should come from Replit Secrets/environment variables.
+
+Do not hardcode credentials into application source files.
+
+If additional server-side secrets are later required, create them as server-only environment variables.
+
+Never expose server secrets through Vite environment variables.
+
+---
+
+# 31. SUPABASE CLIENT
+
+Create a single reusable Supabase client.
+
+Example conceptual structure:
+
+src/lib/supabase.ts
+
+The Supabase client should read configuration from environment variables.
+
+Fail gracefully if required environment variables are missing.
+
+Do not create multiple Supabase clients unnecessarily.
+
+---
+
+# 32. UX PRINCIPLE
+
+The main customer experience should require very few steps.
+
+Target flow:
+
+Open app
+
+↓
+
+Find organization
+
+↓
+
+Select service
+
+↓
+
+See queue status
+
+↓
+
+Get token
+
+↓
+
+Receive token number
+
+↓
+
+Track position
+
+↓
+
+Arrive near turn
+
+↓
+
+Get served
+
+The user should never feel confused about:
+
+* What their token number is
+* How many people are ahead
+* How long they may have to wait
+* What action they should take next
+
+---
+
+# 33. FUTURE FEATURES — DO NOT IMPLEMENT YET
+
+Keep the architecture extensible for future features such as:
+
+* QR code tokens
+* SMS notifications
+* WhatsApp notifications
+* Push notifications
+* Email notifications
+* Appointment scheduling
+* Multiple branches
+* Multiple counters
+* Priority queues
+* Emergency queues
+* Senior citizen priority
+* Accessibility priority
+* AI waiting-time prediction
+* Historical analytics
+* Peak-hour prediction
+* Digital signage
+* Public queue display
+* QR check-in
+* Walk-in token generation
+* Kiosk mode
+* Multi-language support
+* Payments
+* Organization subscription plans
+
+Do not implement these now.
+
+Only design the architecture so they can be added later.
+
+---
+
+# 34. FINAL QUALITY STANDARD
+
+The final MVP should feel like a real SaaS product rather than a demo.
+
+It should have:
+
+* Clean UI
+* Reliable authentication
+* Real Supabase database
+* Real token generation
+* Real queue management
+* Proper authorization
+* Responsive design
+* Good error handling
+* Good loading states
+* Reusable components
+* Maintainable code
+* Secure environment variable handling
+
+Do not use fake/mock queue data once Supabase integration is implemented.
+
+---
+
+# 35. HOW YOU SHOULD WORK WITH ME
+
+Because I want to control Replit usage and credits, work incrementally.
+
+After completing each phase, provide a very short report:
+
+### Completed
+
+* List only what was implemented.
+
+### Tested
+
+* List only what was verified.
+
+### Issues
+
+* List remaining issues, if any.
+
+### Next phase
+
+* State the next recommended phase.
+
+Then WAIT for my instruction before starting the next major phase.
+
+Do not automatically continue through all phases.
+
+If I say:
+
+"Continue"
+
+continue with the next phase only.
+
+If I say:
+
+"Fix the issue"
+
+focus only on that issue.
+
+If I ask for a new feature:
+
+1. Inspect the existing architecture.
+2. Explain briefly where it will fit.
+3. Implement only that feature.
+4. Avoid unnecessary refactoring.
+
+---
+
+# 36. START NOW
+
+Start with **PHASE 1 ONLY**.
+
+First inspect the repository.
+
+Then create/configure the project foundation.
+
+Do NOT implement authentication, queue generation, staff dashboard, realtime functionality, or advanced features yet.
+
+Complete only Phase 1.
+
+After Phase 1 is working, stop and report the result.
+
+Remember:
+
+**Do not build the entire application in one response.**
+**Do not consume unnecessary Replit credits.**

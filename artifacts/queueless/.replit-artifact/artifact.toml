@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "QueueLess"
+description = "A digital queue platform that helps people save time by getting tokens remotely, while organizations manage service queues."
+version = "1.0.0"
+id = "artifacts/queueless"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21436
+
+[services.development]
+run = "pnpm --filter @workspace/queueless run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/queueless", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/queueless/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21436"
+BASE_PATH = "/"
